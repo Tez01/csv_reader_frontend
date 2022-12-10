@@ -1,7 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react';
-
-const FAIL_RESPONSE_CODE = 400;
-const SUCCESS_RESPONSE_CODE = 200;
+import { BACKEND_API_URL, SUCCESS_RESPONSE_CODE } from '../common/common_names';
 
 const DataContext = createContext();
 
@@ -18,15 +16,32 @@ export function DataProvider({ children }) {
     // This function assumes data passed is json data
     // Returns the response received from server
     async function uploadData(jsonData) {
-        if (!jsonData) return FAIL_RESPONSE_CODE;
+        if (!jsonData) return 0;
 
         try {
-            console.log(jsonData);
+            await fetch(BACKEND_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonData),
+            })
+                .then((response) => response.status)
+                .then((status) => {
+                    if (status !== SUCCESS_RESPONSE_CODE) {
+                        throw new Error('Failed to upload data in database');
+                    }
+                    // Here code for setting data state can be written if display
+                    // of data from database is desired.
+                })
+                .catch((err) => {
+                    throw err;
+                });
         } catch (err) {
-            return FAIL_RESPONSE_CODE;
+            return 0;
         }
         setData(jsonData);
-        return SUCCESS_RESPONSE_CODE;
+        return 1;
     }
     const providerValues = useMemo(() => ({ data, uploadData }), [data]);
     return (

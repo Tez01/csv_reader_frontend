@@ -1,3 +1,5 @@
+import * as constants from './common_names';
+
 export function checkFileExtension(filename, pattern) {
     let validity = true;
     // Check file format
@@ -85,7 +87,7 @@ export function getCsvHeaders(csvString) {
         // Array of strings, where each string is a header name
         csvHeaders = csvString
             .slice(0, csvString.indexOf('\n'))
-            .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            .split(constants.CSV_SPLIT_PATTERN);
     } catch (err) {
         return [];
     }
@@ -102,9 +104,7 @@ export function getCsvRows(csvString) {
     try {
         csvRows = csvString.slice(csvString.indexOf('\n') + 1).split('\n');
         csvRows = csvRows.slice(0, -1); // Remove last row as it is empty always due to \n
-        csvRows = csvRows.map((row) =>
-            row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-        ); // Split each row into elements
+        csvRows = csvRows.map((row) => row.split(constants.CSV_SPLIT_PATTERN)); // Split each row into elements
     } catch (err) {
         return [];
     }

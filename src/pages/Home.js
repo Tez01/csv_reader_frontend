@@ -7,18 +7,10 @@ import {
     mapHeadersToRows,
     getCsvRows,
     getCsvHeaders,
-} from '../utils';
+} from '../common/utils';
+import * as constants from '../common/common_names';
 
-const REQUIRED_NUM_OF_HEADERS = 8;
-const REQUIRED_HEADERS = [
-    'date',
-    'category',
-    'lot title',
-    'lot location',
-    'lot condition',
-    'pre-tax amount',
-];
-const SUCCESS_RESPONSE_CODE = 200;
+const { REQUIRED_NUM_OF_HEADERS } = constants;
 
 function Home() {
     // State for maintaining error
@@ -40,8 +32,12 @@ function Home() {
             return;
         }
 
-        const responseCode = await uploadData(csvData);
-        if (responseCode !== SUCCESS_RESPONSE_CODE) {
+        const uploaded = await uploadData(csvData);
+        if (!uploaded) {
+            document
+                .querySelector('.form-fileInput')
+                .setCustomValidity('Error'); // Invalidate the input field to show errors
+            setError('Error in uploading data.');
             return;
         }
 
@@ -80,7 +76,7 @@ function Home() {
 
         let csvHeaders = getCsvHeaders(csvString);
         // Data is invalid, if minimum headers are not present
-        if (csvHeaders.length < REQUIRED_NUM_OF_HEADERS) {
+        if (csvHeaders.length < constants.REQUIRED_NUM_OF_HEADERS) {
             setError('Minimum headers not present');
             // Set validity of this element to false so that form becomes invalid
             e.target.setCustomValidity('Error');
@@ -88,16 +84,7 @@ function Home() {
         }
         // if csv headers dont have a name, give them names explicitly
         if (csvHeaders[0] === '') {
-            csvHeaders = [
-                'date',
-                'category',
-                'lot title',
-                'lot location',
-                'lot condition',
-                'pre-tax amount',
-                'tax name',
-                'tax amount',
-            ];
+            csvHeaders = constants.ALL_HEADERS;
         }
 
         const csvRows = getCsvRows(csvString);
@@ -112,7 +99,7 @@ function Home() {
         const csvArray = mapHeadersToRows(
             csvHeaders,
             csvRows,
-            REQUIRED_HEADERS
+            constants.REQUIRED_HEADERS
         );
         if (csvArray.length === 0) {
             // If there is an error in CSV data
