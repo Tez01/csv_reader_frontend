@@ -10,13 +10,12 @@ import {
 } from '../common/utils';
 import * as constants from '../common/common_names';
 
-const { REQUIRED_NUM_OF_HEADERS } = constants;
-
 function Home() {
     // State for maintaining error
     const [error, setError] = useState('');
     const [csvData, setCsvData] = useState([]);
-
+    // State for maintaining any loading state
+    const [loading, setLoading] = useState(false);
     /* ******Navigation hooks ******** */
     const navigate = useNavigate();
     /* *******Data Context ************* */
@@ -31,8 +30,9 @@ function Home() {
             e.stopPropagation();
             return;
         }
-
+        setLoading(true);
         const uploaded = await uploadData(csvData);
+        setLoading(false);
         if (!uploaded) {
             document
                 .querySelector('.form-fileInput')
@@ -129,7 +129,14 @@ function Home() {
                     required
                 />
                 <div className="invalid-feedback">{error}</div>
-
+                {/* Uploading to database message */}
+                {loading ? (
+                    <div className="loading-message">
+                        Uploading to database...
+                    </div>
+                ) : (
+                    ''
+                )}
                 <button type="submit" className="btn btn-primary my-3">
                     Upload
                 </button>

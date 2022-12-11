@@ -1,19 +1,14 @@
 import { useEffect, useState } from 'react';
+/* eslint-disable */
+import { Chart as ChartJS } from 'chart.js/auto';
+/* eslint-enable */
 import BarChart from '../components/BarChart';
 import PieChart from '../components/PieChart';
 import { useData } from '../contexts/DataContext';
 import * as constants from '../common/common_names';
+import { getUniqueFields } from '../common/utils';
 
 const CSV_INT_BASE = 10;
-// Gets all the unique fields in the data array based on the field type requested
-export function getUniqueFields(dataArray, fieldType) {
-    const uniqueFields = new Set([]);
-    dataArray.forEach((row) => {
-        const field = row[fieldType];
-        uniqueFields.add(field);
-    });
-    return Array.from(uniqueFields);
-}
 
 // Returns the total pre-tax amount based on the queryType and query for that queryType
 // Eg: Get total pre tax amount for constants.CATEGORY_FIELD_NAME 'Construction'. Here query is 'Construction' and queryType is constants.CATEGORY_FIELD_NAME
@@ -42,14 +37,6 @@ export function getAmountForDate(date, dataArray) {
     });
 
     return totalAmount;
-}
-
-function mapTwoArrays(array1, array2) {
-    const result = {};
-    array1.forEach((element, i) => {
-        result[element] = array2[i];
-    });
-    return result;
 }
 
 function Analytics() {
